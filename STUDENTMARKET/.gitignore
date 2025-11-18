@@ -1,0 +1,34 @@
+/Zadaci - predavanja 2_2.doc
+
+# Virtual environment directories
+venv/
+env/
+.venv/
+ENV/
+
+# Local environment / secret files (ignore all .env* but keep the example file)
+.env*
+!.env.example
+
+# Python cache and compiled files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Test, coverage and tooling caches
+.pytest_cache/
+.mypy_cache/
+.tox/
+.cache/
+.coverage
+htmlcov/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+
+# Instance and local DB
+instance/
+*.sqlite3

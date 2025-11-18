@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}About - StudentMarket{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-4">About StudentMarket</h1>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="mb-3">Our Mission</h3>
+                    <p class="lead">
+                        StudentMarket is a platform designed specifically for students to buy and sell items within their community.
+                    </p>
+                    <p>
+                        We understand the unique needs of students - from textbooks and electronics to furniture and clothing. 
+                        Our platform makes it easy to connect with fellow students, find great deals, and sell items you no longer need.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="mb-3">What You Can Do</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <strong>Browse Ads:</strong> Search through various categories to find what you need
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <strong>Post Ads:</strong> Create listings with detailed descriptions using Markdown
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <strong>Connect:</strong> Contact sellers directly through email
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <strong>Manage:</strong> Edit and delete your own ads anytime
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="mb-3">Categories</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-book text-primary me-2"></i> Books</li>
+                                <li><i class="bi bi-laptop text-primary me-2"></i> Electronics</li>
+                                <li><i class="bi bi-file-text text-primary me-2"></i> Scripts</li>
+                                <li><i class="bi bi-bag text-primary me-2"></i> Clothes</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-house text-primary me-2"></i> Furniture</li>
+                                <li><i class="bi bi-bicycle text-primary me-2"></i> Sports & Outdoors</li>
+                                <li><i class="bi bi-three-dots text-primary me-2"></i> Other</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="mb-3">Get Started</h3>
+                    <p>Ready to join the StudentMarket community?</p>
+                    <div class="d-grid gap-2 d-md-flex">
+                        {% if not current_user.is_authenticated %}
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                                <i class="bi bi-person-plus"></i> Create Account
+                            </a>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('ads.create_ad') }}" class="btn btn-success">
+                                <i class="bi bi-plus-circle"></i> Post Your First Ad
+                            </a>
+                            <a href="{{ url_for('ads.list_ads') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-search"></i> Browse Ads
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

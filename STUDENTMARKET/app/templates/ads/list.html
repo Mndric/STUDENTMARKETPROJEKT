@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Ads - StudentMarket{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h1 class="mb-4">Browse Ads</h1>
+    
+    <!-- Search and Filter -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('ads.list_ads') }}">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="search" 
+                               placeholder="Search..." 
+                               value="{{ request.args.get('search', '') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="category">
+                            <option value="">All Categories</option>
+                            {% for value, label in categories %}
+                                <option value="{{ value }}" {% if request.args.get('category') == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Results Info -->
+    {% if request.args.get('search') or request.args.get('category') %}
+        <div class="alert" style="background-color: var(--cream);">
+            {% if ads %}
+                Found {{ total }} result(s)
+            {% else %}
+                No results found
+            {% endif %}
+            <a href="{{ url_for('ads.list_ads') }}" class="alert-link ms-2">Clear filters</a>
+        </div>
+    {% endif %}
+    
+    <!-- Ads Grid -->
+    {% if ads %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+            {% for ad in ads %}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge">{{ dict(ad.CATEGORIES).get(ad.category, ad.category) }}</span>
+                                <small class="text-muted">{{ ad.created_at.strftime('%b %d, %Y') }}</small>
+                            </div>
+                            
+                            <h5 class="card-title mb-2">{{ ad.title }}</h5>
+                            
+                            <p class="card-text text-muted mb-3">
+                                {{ ad.description[:120] }}{% if ad.description|length > 120 %}...{% endif %}
+                            </p>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    by {{ ad.created_by.name }}
+                                </small>
+                                <a href="{{ url_for('ads.view_ad', ad_id=ad.id) }}" class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+            <nav aria-label="Ads pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('ads.list_ads', page=page-1, search=request.args.get('search'), category=request.args.get('category')) }}">
+                            Previous
+                        </a>
+                    </li>
+                    
+                    {% for p in range(1, total_pages + 1) %}
+                        {% if p == page %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ p }}</span>
+                            </li>
+                        {% elif p <= 3 or p > total_pages - 3 or (p >= page - 1 and p <= page + 1) %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('ads.list_ads', page=p, search=request.args.get('search'), category=request.args.get('category')) }}">
+                                    {{ p }}
+                                </a>
+                            </li>
+                        {% elif p == 4 or p == total_pages - 3 %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('ads.list_ads', page=page+1, search=request.args.get('search'), category=request.args.get('category')) }}">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <h3 class="text-muted mb-3">No ads yet</h3>
+            <p class="text-muted mb-4">Be the first to post something!</p>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('ads.create_ad') }}" class="btn btn-primary">
+                    Post Your Ad
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                    Sign Up to Post
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.hover-card {
+    transition: all 0.3s ease;
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+}
+</style>
+{% endblock %}
