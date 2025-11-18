@@ -2,7 +2,7 @@ from app import mongo
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson.objectid import ObjectId
-from datetime import datetime
+from datetime import datetime, date
 import markdown
 import bleach
 
@@ -21,6 +21,7 @@ class User(UserMixin):
         self.dob = dob  # Date of birth
         self.description = description
         self.created_at = datetime.utcnow()
+        
     
     def set_password(self, password):
         """Hash and set password"""
@@ -32,16 +33,25 @@ class User(UserMixin):
     
     def to_dict(self):
         """Convert user to dictionary for MongoDB"""
-        return {
+        data = {
             'name': self.name,
             'email': self.email,
             'password_hash': self.password_hash,
             'is_email_verified': self.is_email_verified,
             'is_admin': self.is_admin,
-            'dob': self.dob,
             'description': self.description,
             'created_at': self.created_at
         }
+        
+        # Handle date of birth - convert date to datetime for MongoDB
+        if self.dob:
+            if isinstance(self.dob, date):
+                # Convert date to datetime (set time to midnight)
+                data['dob'] = datetime.combine(self.dob, datetime.min.time())
+            else:
+                data['dob'] = self.dob
+        
+        return data
     
     def save(self):
         """Save user to database"""

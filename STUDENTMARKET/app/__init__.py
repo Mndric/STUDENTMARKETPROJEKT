@@ -21,6 +21,7 @@ limiter = Limiter(
 admin_permission = Permission(RoleNeed('admin'))
 
 
+
 def create_app(config_name='default'):
     """Create and configure the Flask application"""
     app = Flask(__name__, instance_relative_config=False)
