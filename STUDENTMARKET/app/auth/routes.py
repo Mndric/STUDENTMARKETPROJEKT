@@ -3,7 +3,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app.auth import auth_bp
 from app.auth.forms import RegistrationForm, LoginForm, ProfileForm
 from app.models import User
-
+from app import mail
+from flask_mail import Message
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -23,6 +24,7 @@ def register():
         )
         user.set_password(form.password.data)
         user.save()
+        
         
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('auth.login'))
@@ -79,3 +81,29 @@ def profile():
         return redirect(url_for('auth.profile'))
     
     return render_template('auth/profile.html', form=form, user=current_user)
+@auth_bp.route("/verify/<token>")
+def verify_email(token):
+    error = User.verify_email(token)
+    if error:
+        flash(error, "danger")
+        return redirect(url_for("auth.login"))
+
+    flash("Your email has been verified!", "success")
+    return redirect(url_for("auth.login"))
+
+def send_verification_email(user):
+    token = user.generate_verification_token()
+    verify_url = url_for("auth.verify_email", token = token, _external = True)
+
+    msg = Message(
+        subject = "Verify your Email - FamilyRecipes",
+        recipients = [user.email],
+        body = (
+            f"Hi {user.name}, \n\n"
+            f"Please click the link below to verify your email:\n"
+            f"{verify_url}\n\n"
+            f"This link will expire in 1 hour!"
+        ),
+    )
+    mail.send(msg)
+    
